@@ -1,0 +1,25 @@
+{
+  "name": "gulp-sma",
+  "version": "1.0.0",
+  "description": "Gulp plugin for sma",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/hedgefog/gulp-sma"
+  },
+  "keywords": [
+    "gulpplugin",
+    "sma",
+    "gulp"
+  ],
+  "author": "Hedgehog Fog",
+  "license": "MIT",
+  "dependencies": {
+    "colors": "^1.1.2",
+    "glob": "^7.1.2",
+    "gulp-util": "^3.0.8"
+  },
+  "devDependencies": {
+    "eslint": "^4.3.0"
+  }
+}
