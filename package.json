@@ -1,6 +1,6 @@
 {
   "name": "gulp-sma",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Gulp plugin for sma",
   "main": "index.js",
   "repository": {

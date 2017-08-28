@@ -78,9 +78,11 @@ function buildMessageRegExp() {
 
 function formatArgs(params, outPath) {
     return [
-        `"-o${outPath}"`,
-        `"-i${params.includeDir}"`,
-        `"${params.path}"`
+        `${params.path}`,
+        `-o${outPath}`,
+        params.includeDir instanceof Array
+            ? params.includeDir.map((dir) => `-i${dir}`)
+            : `-i${params.includeDir}`
     ];
 }
 
@@ -91,29 +93,38 @@ module.exports = (params) => {
 
     makePath(dest);
 
-    const args = formatArgs(params, dest);
-    const cmd = [`${params.compiler}`, ...args].join(' ');
-
     return new Promise((resolve, reject) => {
+        let output = '';
+
         console.log(`Building plugin '${params.path}'...`.debug);
 
-        child_process.exec(cmd, (err, stdout) => {
-            if (err) {
-                throw err;
-            }
+        const compilerProcess = child_process.spawn(
+            params.compiler,
+            formatArgs(params, dest),
+            {env: process.env}
+        );
 
-            const result = Object.assign(
+        compilerProcess.stdout.on('data', (data) => {
+            output += data.toString();
+        });
+
+        compilerProcess.stderr.on('data', (data) => console.err(data));
+
+        compilerProcess.on('error', (err) => {
+            console.log(`Failed to compile plugin ${fileName}.`.error);
+
+            reject(Object.assign(
+                {plugin: fileName, error: err},
+                parseOutput(output)
+            ));
+        });
+        compilerProcess.on('close', () => {
+            console.log(`Plugin ${fileName} updated.`.info);
+
+            resolve(Object.assign(
                 {plugin: fileName},
-                parseOutput(stdout)
-            );
-
-            if (!result.aborted) {
-                resolve(result);
-                console.log(`Plugin ${fileName} updated.`.info);
-            } else {
-                console.log(`Failed to compile plugin ${fileName}.`.error)
-                reject(result);
-            }
+                parseOutput(output)
+            ));
         });
     });
 };
