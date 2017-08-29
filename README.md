@@ -25,7 +25,7 @@ gulp.task('sma', () => {
     .pipe(gulp.dest('./dist/addons/amxmodx/scripting'))
 });
 
-gulp.task('sma:watch', ['build:plugins'], () => {
+gulp.task('sma:watch', () => {
   gulp.watch('./src/scripts/**/*.sma', ['sma']);
 });
 ```
