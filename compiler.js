@@ -101,7 +101,10 @@ module.exports = (params) => {
         const compilerProcess = child_process.spawn(
             params.compiler,
             formatArgs(params, dest),
-            {env: process.env}
+            {
+                env: process.env,
+                cwd: path.parse(params.compiler).dir
+            }
         );
 
         compilerProcess.stdout.on('data', (data) => {
