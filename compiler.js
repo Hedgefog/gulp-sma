@@ -90,7 +90,7 @@ module.exports = (params) => {
     const fileName = `${parsedPath.name}.${PluginExt}`;
     const dest = path.join(params.dest, fileName);
 
-    mkdirp(params.dest);
+    mkdirp.sync(params.dest);
 
     return new Promise((resolve, reject) => {
         let output = '';
