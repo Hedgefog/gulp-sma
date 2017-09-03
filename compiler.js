@@ -1,9 +1,8 @@
 const path = require('path');
 const child_process = require('child_process');
 
+const mkdirp = require('mkdirp');
 const colors = require('colors');
-
-const {makePath} = require('./utils');
 
 colors.setTheme({
     data: 'grey',
@@ -91,7 +90,7 @@ module.exports = (params) => {
     const fileName = `${parsedPath.name}.${PluginExt}`;
     const dest = path.join(params.dest, fileName);
 
-    makePath(dest);
+    mkdirp(params.dest);
 
     return new Promise((resolve, reject) => {
         let output = '';
