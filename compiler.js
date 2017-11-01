@@ -76,12 +76,14 @@ function buildMessageRegExp() {
 }
 
 function formatArgs(params, outPath) {
+    const includeArgs = params.includeDir instanceof Array
+        ? params.includeDir.map((dir) => `-i${dir}`)
+        : [`-i${params.includeDir}`];
+
     return [
         `${params.path}`,
         `-o${outPath}`,
-        params.includeDir instanceof Array
-            ? params.includeDir.map((dir) => `-i${dir}`)
-            : `-i${params.includeDir}`
+        ...includeArgs
     ];
 }
 
