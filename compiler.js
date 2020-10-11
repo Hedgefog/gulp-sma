@@ -112,7 +112,7 @@ module.exports = (params) => {
             output += data.toString();
         });
 
-        compilerProcess.stderr.on('data', (data) => console.err(data));
+        compilerProcess.stderr.on('data', (data) => console.error(data));
 
         compilerProcess.on('error', (err) => {
             console.log(`Failed to compile plugin ${fileName}.`.error);

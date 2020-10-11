@@ -1,5 +1,8 @@
 # Gulp Sma Changelog
 
+## v1.0.6
+- Fixed error handler.
+
 ## v1.0.5
 - Fixed multi include dir handler.
 
