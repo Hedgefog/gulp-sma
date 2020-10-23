@@ -25,7 +25,7 @@ const MessageRegExp = {
 const messageRegExp = buildMessageRegExp();
 
 function parseOutput(output) {
-    const result = {messages: [], aborted: false};
+    const result = {messages: [], aborted: false, error: false};
 
     output.split('\n').forEach(line => {
         const message = parseLine(line);
@@ -34,6 +34,7 @@ function parseOutput(output) {
 
         if (type === 'error' || type === 'fatal error') {
             console.log(line.error);
+            result.error = true;
         } else if (type === 'warning' ) {
             console.log(line.warn);
         } else if (type === 'echo') {
@@ -115,20 +116,32 @@ module.exports = (params) => {
         compilerProcess.stderr.on('data', (data) => console.error(data));
 
         compilerProcess.on('error', (err) => {
+            const parsedOutput = parseOutput(output);
             console.log(`Failed to compile plugin ${fileName}.`.error);
 
             reject(Object.assign(
                 {plugin: fileName, error: err},
-                parseOutput(output)
+                parsedOutput
             ));
         });
-        compilerProcess.on('close', () => {
-            console.log(`Plugin ${fileName} updated.`.info);
 
-            resolve(Object.assign(
-                {plugin: fileName},
-                parseOutput(output)
-            ));
+        compilerProcess.on('close', () => {
+            const parsedOutput = parseOutput(output);
+            if (parsedOutput.error) {
+                console.log(`Failed to compile plugin ${fileName}.`.error);
+
+                reject(Object.assign(
+                    {plugin: fileName},
+                    parsedOutput
+                ));
+            } else {
+                console.log(`Plugin ${fileName} updated.`.info);
+
+                resolve(Object.assign(
+                    {plugin: fileName},
+                    parsedOutput
+                ));
+            }
         });
     });
 };
