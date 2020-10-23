@@ -11,7 +11,8 @@ module.exports = function({
     ignoreSubDirs = true,
     compiler,
     includeDir,
-    dest
+    dest,
+    ignoreError = false
 }) {
     const stream = new Transform({objectMode: true});
 
@@ -34,7 +35,7 @@ module.exports = function({
             )
         })
             .then(() => cb(null, file))
-            .catch(() => cb(null, file));
+            .catch((err) => cb(ignoreError ? null : err, file));
     };
 
     return stream;
