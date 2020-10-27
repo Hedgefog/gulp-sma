@@ -15,14 +15,20 @@ colors.setTheme({
 const PluginExt = 'amxx';
 
 const MessageRegExp = {
-    filename: '([a-zA-Z0-9.-_\\/\\s]+)',
-    line: '\\(([0-9]+)(?:\\-([0-9]+))?\\)',
-    type: '((?:fatal\\s)?error|warning)',
-    code: '([0-9]+)',
-    message: '(.*)'
+    filename: /([a-zA-Z0-9.\-_/:\\\s]+)/,
+    line: /\(([0-9]+)(?:\s--\s([0-9]+))?\)/,
+    type: /((?:fatal\s)?error|warning)/,
+    code: /([0-9]+)/,
+    message: /(.*)/
 };
 
 const messageRegExp = buildMessageRegExp();
+
+function formatError(parsedLine) {
+    const { filename, startLine, type, code, message} = parsedLine;
+
+    return `${filename}(${startLine}) : ${type} ${code}: ${message}`;
+}
 
 function parseOutput(output) {
     const result = {messages: [], aborted: false, error: false};
@@ -33,10 +39,10 @@ function parseOutput(output) {
         const {type} = message;
 
         if (type === 'error' || type === 'fatal error') {
-            console.log(line.error);
+            console.log(formatError(message).error);
             result.error = true;
         } else if (type === 'warning' ) {
-            console.log(line.warn);
+            console.log(formatError(message).warn);
         } else if (type === 'echo') {
             if (line.startsWith('Compilation aborted.')
                 || line.startsWith('Could not locate output file')) {
@@ -72,7 +78,17 @@ function parseLine(line) {
 function buildMessageRegExp() {
     const {filename, line, type, code, message} = MessageRegExp;
 
-    const pattern = `${filename}${line}\\s\\:\\s${type}\\s${code}\\:\\s${message}`;
+    const pattern = [
+        filename,
+        line,
+        /\s:\s/,
+        type,
+        /\s/,
+        code,
+        /:\s/,
+        message
+    ].map(r => r.toString().slice(1, -1)).join('');
+
     return new RegExp(pattern);
 }
 
